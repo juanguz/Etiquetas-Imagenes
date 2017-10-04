@@ -1,0 +1,150 @@
+<html>
+<head>
+
+<script
+			  src="https://code.jquery.com/jquery-2.2.3.min.js"
+			  integrity="sha256-a23g1Nt4dtEYOj7bR+vTu7+T8VP13humZFBJNIYoEJo="
+			  crossorigin="anonymous"></script>
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+<!-- Optional theme -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+<!-- Latest compiled and minified JavaScript -->
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+<style>
+.etiqueta{
+float:left;
+
+}
+
+</style>
+
+<script type="text/javascript">
+var x;
+x = $(document);
+x.ready(inicializar);
+
+
+
+	function inicializar(){
+	mostrarImagenes('');
+
+}
+	
+	function crearEtiqueta(val1,num,numElementos){
+	
+	$nume="#"+num;
+	$($nume).append('<span id="tag'+numElementos+'" data-id="'+val1+'"> <button type="button" id="boton'+numElementos+'"  class="btn btn-default" onclick="mostrarImagenes(\''+val1+'\')">'+val1+'   <button  onclick="cerrarEtiqueta('+numElementos+')" id="etiqueta'+numElementos+'" type="button" class="btn btn-danger"  >X</button></button></span>');
+	return false;
+
+		}
+
+	function mostrarImagenes(etiqueta){
+	
+	if(etiqueta==""){
+	$direccion="search.php";
+	
+	}
+	
+	else{
+						$(".container").empty();
+			$direccion="tagima.php?nombre_tag="+etiqueta;
+	
+	}
+	
+	
+	$.getJSON( $direccion, function( data ) {
+  $.each( data, function( key, val ) {
+    key=key+1;
+	var $columna=$('<div id="img'+key+'" class="col-xs-6 col-sm-3">');
+	var $img=$('<img class="img-responsive" src="'+val+'" data-id="'+key+'">');
+	var $input = $('<input type="text" class="form-control" placeholder="Text input" id="text'+key+'">');
+	var $div = $('<div class="contenedor" id="'+key+'" data-id="'+val+'"">');
+	var $direccion="etiquetas.php?ruta="+val;
+	
+	$columna.append($img)
+		    .append($("<br/>"))
+			.append($input)
+			.append($("<br/>"))
+			.append($div)
+			.appendTo( ".container" );
+
+$.getJSON( $direccion, function( data1 ) {
+  $.each( data1, function( key1, val1 ) {
+	
+
+	
+			id="#"+this.id;
+				num=this.id;
+				num=key;
+				var numElementos = $('.btn-danger').length+1;
+				crearEtiqueta(val1,num,numElementos);
+
+});
+	});		
+	
+	$input.keypress(function(e){
+
+								
+			if (e.which == 13) {
+			var valor=$(this).val();
+			$id=$(this).attr('id');
+
+			if(valor!=""){
+
+$num=$id.substring(4,5);
+						$direccion3='insertartag.php?ruta='+val+'&etiqueta='+valor;
+				 $.getJSON($direccion3);
+
+				}
+								
+
+				   var numElementos = $('.btn-danger').length+1;
+						crearEtiqueta(valor,$num,numElementos);
+								$(this).val("");
+
+				}
+			
+
+			});
+
+
+	
+	
+
+
+
+	
+});
+	
+	
+});
+
+}
+
+	
+		function cerrarEtiqueta(numElementos){
+
+		id="#tag"+numElementos;
+		var $eti=$(id).attr('data-id');
+		var contenedor=$(id).parent("div").attr('id');
+		var ruta= $('#'+contenedor).attr('data-id');
+		$direccion4='borrartag.php?etiqueta='+$eti+'&ruta='+ruta;
+		$( id ).remove();
+		$.getJSON( $direccion4);
+		return false;
+	
+	
+	}
+	
+	
+	
+</script>
+</head>
+<body>
+<div class="container">
+</div>
+</body>
+</html>
